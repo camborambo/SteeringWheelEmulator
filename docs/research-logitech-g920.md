@@ -86,8 +86,9 @@ Optional toolbar identity (not a second FFB stack):
 | OEM FFB | Same **`emuffb.dll`** CLSID as G920 |
 | Not used | Fanatec SDK / FAW; Logitech Steering Wheel SDK pin; Fanatec DD1 PC `0006` |
 | Physical base | Still your real Fanatec/Simucube/etc. for motor output and binding |
+| Handbrake / Dial | Not in the Fanatec bind list or HID yet — no verified OEM face without DD1 hardware. Forza mainly needs wheel identity + FFB; buttons/handbrake bind from physical devices. Capture: **Debug Tools → Capture Fanatec OEM…** |
 
-Use when a title prefers a Fanatec-class device. Gear R defaults to **12**. Details: [architecture.md](architecture.md), [user-guide.md](user-guide.md#emulated-device).
+Use when a title prefers a Fanatec-class device. Gear R defaults to **12**. Details: [architecture.md](architecture.md), [user-guide.md](user-guide.md#emulated-device) · [Forza steps](user-guide.md#forza-horizon--use-fanatec-dd1).
 
 ## Related
 

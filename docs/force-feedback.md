@@ -84,7 +84,7 @@ Games do **not** send one universal force stream. They pick an effect mix (and u
 
 ### Recommendation for Forza Horizon
 
-Use **Emulated device → Fanatec DD1** so Forza detects a Fanatec PC Comp wheel. In Forza, select **any Fanatec wheel profile**, then **custom bind** axes/buttons to create your custom wheel profile. Step-by-step: [user guide — Forza Horizon](user-guide.md#forza-horizon--use-fanatec-dd1).
+Use **Emulated device → Fanatec DD1** so Forza detects a Fanatec PC Comp wheel for **steering + OEM FFB**. In Forza, select **any Fanatec wheel profile**, then **custom bind** axes/buttons to create your custom wheel profile. Button / handbrake input from physical devices is usually fine; the emulator Fanatec bind list omits a virtual Handbrake Dial until we have a hardware OEM capture (**Debug Tools → Capture Fanatec OEM…**). Step-by-step: [user guide — Forza Horizon](user-guide.md#forza-horizon--use-fanatec-dd1).
 
 ### Findings (Forza Horizon on virtual G920 — why DD1 is better)
 

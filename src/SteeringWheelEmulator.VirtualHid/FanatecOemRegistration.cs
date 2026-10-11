@@ -5,8 +5,10 @@ namespace SteeringWheelEmulator.VirtualHid;
 
 /// <summary>
 /// DirectInput OEM joystick identity for virtual Fanatec DD1 (PC Comp <c>0EB7:0004</c>).
-/// Reuses <see cref="G920OemRegistration.OemFfbClsid"/> (<c>emuffb.dll</c>) so DI OEM FFB
-/// still feeds the existing SHM mixer.
+/// Matches the working Desktop fork OEM layout (default-value axis/effect names, full effect
+/// catalog, same OEMData / FF attributes / five PC Comp axes). Reuses
+/// <see cref="G920OemRegistration.OemFfbClsid"/> (<c>emuffb.dll</c>) so DI OEM FFB still
+/// feeds the existing SHM mixer.
 /// </summary>
 public static class FanatecOemRegistration
 {
@@ -31,15 +33,18 @@ public static class FanatecOemRegistration
         var profile = EmulatedDeviceProfiles.Get(kind);
         WriteOemTree(Registry.CurrentUser, profile);
         WriteOemTree(Registry.LocalMachine, profile);
+        // Physical DD1 PC must stay on FAW even after we touch sibling Fanatec OEM keys.
+        FanatecPhysicalFfbOem.EnsureDd1PcForceFeedback();
         LastMessage = $"Fanatec OEM registered → {profile.OemKeyName} CLSID {OemFfbClsid}";
         if (!IsPcCompOemReady(out var missing))
             LastMessage += " — WARNING incomplete: " + missing;
     }
 
-    /// <summary>True when VID_0EB7&amp;PID_0004 OEMForceFeedback points at emuffb.</summary>
+    /// <summary>True when VID_0EB7&amp;PID_0004 OEMForceFeedback points at emuffb with DI effect names.</summary>
     public static bool IsPcCompOemReady(out string missing)
     {
         const string key = "VID_0EB7&PID_0004";
+        const string constantGuid = "{13541C20-8E33-11D0-9AD0-00A0C9A06E35}";
         foreach (var root in new[] { Registry.CurrentUser, Registry.LocalMachine })
         {
             try
@@ -47,13 +52,23 @@ public static class FanatecOemRegistration
                 using var ff = root.OpenSubKey(
                     @"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\" +
                     key + @"\OEMForceFeedback");
-                var clsid = ff?.GetValue("CLSID") as string;
-                if (clsid is not null &&
-                    clsid.Contains("A920FFB0", StringComparison.OrdinalIgnoreCase))
+                if (ff is null) continue;
+                var clsid = ff.GetValue("CLSID") as string;
+                if (clsid is null ||
+                    !clsid.Contains("A920FFB0", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                using var constant = ff.OpenSubKey(@"Effects\" + constantGuid);
+                // DI reads the default value for effect names (fork / G920 path).
+                if (constant?.GetValue("") is string name &&
+                    !string.IsNullOrWhiteSpace(name))
                 {
                     missing = "";
                     return true;
                 }
+
+                missing = $"OEM tree {key}\\OEMForceFeedback\\Effects\\{constantGuid} default name missing";
+                return false;
             }
             catch { /* ignore */ }
         }
@@ -79,6 +94,9 @@ public static class FanatecOemRegistration
                 // best-effort
             }
         }
+
+        // Restore Fanatec FAW EffectDriver for physical DD1 PC after session teardown.
+        try { FanatecPhysicalFfbOem.EnsureDd1PcForceFeedback(); } catch { /* best-effort */ }
     }
 
     private static void WriteOemTree(RegistryKey root, IEmulatedDeviceProfile profile)
@@ -95,13 +113,19 @@ public static class FanatecOemRegistration
             key.SetValue("OEMData", OemData, RegistryValueKind.Binary);
             key.SetValue("Version", 1, RegistryValueKind.DWord);
 
-            // Match live PC Comp DI: Y=Combined, Z=Accel, Rz=Brake, Slider=Clutch, Dial=Handbrake.
+            // Match live PC Comp DI / working fork: Y=Combined, Z=Accel, Rz=Brake, Slider=Clutch.
             WriteAxis(key, "0", "Wheel Axis", [0x01, 0x81, 0x00, 0x00], [0x0A, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
             WriteAxis(key, "1", "Combined Pedals", [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x31, 0x00], null);
             WriteAxis(key, "2", "Accelerator", [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x32, 0x00], null);
             WriteAxis(key, "5", "Brake", [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x35, 0x00], null);
             WriteAxis(key, "6", "Clutch", [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x36, 0x00], null);
-            WriteAxis(key, "7", "Handbrake", [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x37, 0x00], null);
+            // Drop stale Handbrake axis from older builds that advertised Dial without packing it.
+            try
+            {
+                using var axes = key.OpenSubKey("Axes", writable: true);
+                axes?.DeleteSubKeyTree("7", throwOnMissingSubKey: false);
+            }
+            catch { /* ignore */ }
 
             for (var i = 0; i < 32; i++)
             {
@@ -117,6 +141,7 @@ public static class FanatecOemRegistration
                 RegistryValueKind.Binary);
             ff.SetValue("CLSID", OemFfbClsid, RegistryValueKind.String);
 
+            // Full DI effect catalog (same as fork / G920) — Unbound creates Triangle / Ramp / etc.
             WriteEffect(ff, "{13541C20-8E33-11D0-9AD0-00A0C9A06E35}", "Constant Force",
                 [0x00, 0x00, 0x00, 0x00, 0x01, 0x86, 0x00, 0x00, 0xED, 0x03, 0x00, 0x00, 0xED, 0x03, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00]);
             WriteEffect(ff, "{13541C21-8E33-11D0-9AD0-00A0C9A06E35}", "Ramp Force",
@@ -142,7 +167,7 @@ public static class FanatecOemRegistration
         }
         catch
         {
-            // best-effort
+            // HKLM may fail without elevation; HKCU still helps.
         }
     }
 
@@ -150,17 +175,21 @@ public static class FanatecOemRegistration
     {
         using var axis = oem.CreateSubKey($@"Axes\{index}", writable: true);
         if (axis is null) return;
-        axis.SetValue("OEMName", name, RegistryValueKind.String);
+        // Default value "" — same as fork / G920OemRegistration. DI reads this, not OEMName.
+        axis.SetValue("", name, RegistryValueKind.String);
+        try { axis.DeleteValue("OEMName", throwOnMissingValue: false); } catch { /* ignore */ }
         axis.SetValue("Attributes", attributes, RegistryValueKind.Binary);
         if (ffAttributes is not null)
             axis.SetValue("FFAttributes", ffAttributes, RegistryValueKind.Binary);
     }
 
-    private static void WriteEffect(RegistryKey ff, string guid, string name, byte[] attributes)
+    private static void WriteEffect(RegistryKey ffRoot, string effectClsid, string name, byte[] attributes)
     {
-        using var effect = ff.CreateSubKey($@"Effects\{guid}", writable: true);
+        using var effect = ffRoot.CreateSubKey($@"Effects\{effectClsid}", writable: true);
         if (effect is null) return;
-        effect.SetValue("OEMName", name, RegistryValueKind.String);
+        // Default value "" — same as fork / G920OemRegistration. DI reads this, not OEMName.
+        effect.SetValue("", name, RegistryValueKind.String);
+        try { effect.DeleteValue("OEMName", throwOnMissingValue: false); } catch { /* ignore */ }
         effect.SetValue("Attributes", attributes, RegistryValueKind.Binary);
     }
 }

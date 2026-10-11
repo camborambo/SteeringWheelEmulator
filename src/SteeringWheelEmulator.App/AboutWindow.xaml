@@ -33,7 +33,7 @@
 
         <TextBlock Text="Support" FontWeight="SemiBold" Margin="0,18,0,6"/>
         <TextBlock TextWrapping="Wrap" Opacity="0.85" LineHeight="20"
-                   Text="Running into a problem? Use Debug on the main window status bar, reproduce the issue, Stop debug, then Export log… and attach the zip to a GitHub issue (include what you were doing and your wheel/game)."/>
+                   Text="Running into a problem? Use Debug Tools on the status bar → Start Debug, reproduce the issue, Stop Debug, then Export log… and attach the zip to a GitHub issue (include what you were doing and your wheel/game)."/>
         <TextBlock Margin="0,8,0,0">
           <Hyperlink NavigateUri="https://github.com/camborambo/SteeringWheelEmulator/issues" RequestNavigate="AuthorLink_RequestNavigate"
                      Foreground="#8AB4F8" TextDecorations="None">github.com/camborambo/SteeringWheelEmulator/issues</Hyperlink>

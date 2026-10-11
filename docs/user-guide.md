@@ -65,12 +65,14 @@ Your **physical** Fanatec (or other) base stays in Detected devices for bind and
 
 ### Forza Horizon — use Fanatec DD1
 
-Forza detects wheels by **device class**. For the best detection and binding path:
+Forza detects wheels by **device class**. What matters most is that Forza sees a **Fanatec PC Comp** identity for **steering + OEM force feedback**. Button / pedal input from your physical devices is usually fine once you custom-bind in-game.
 
 1. Stop the bridge → set **Emulated device** to **Fanatec DD1** → **Save** your input profile → **Start**.
 2. Launch Forza. It should see a Fanatec PC Comp–class wheel (`0EB7:0004`).
 3. In Forza’s wheel / settings UI, select **any Fanatec wheel profile** (DD1, ClubSport, etc. — pick whatever the game lists).
 4. Use Forza’s **custom bind** flow to map steering, pedals, and buttons to that profile so you end up with a **custom wheel profile** that matches your physical layout.
+
+**Fanatec Handbrake axis:** the emulator’s Fanatec bind list does **not** include a virtual Handbrake / Dial axis. We do not have a verified physical OEM / joy.cpl face for Dial on PC Comp (no DD1 hardware capture yet). That is rarely needed for Forza — the game can bind handbrake and other controls from your real devices; the hard part is wheel detection and FFB on the virtual Fanatec identity. If you have a physical Fanatec and want to help fill that gap: **Debug Tools → Capture Fanatec OEM…** (prefer emulator Stopped) and attach the zip to a GitHub issue. Telemetry arcade **Handbrake** (speed dump) is separate and still available.
 
 Using the virtual **G920** identity in Forza is possible but usually worse: Forza then authors a sparse G920-class FFB mix (grain on DD bases). Prefer Fanatec DD1 for Forza; keep G920 for Heat / Unbound.
 
@@ -271,7 +273,9 @@ Leave status-bar **Debug** **off** during normal play. It turns on OEM / HID++ f
 
 1. Click **Debug** (status bar, bottom-right) - clears prior session logs in `%TEMP%` and starts OEM / HID++ file logging.
 2. Reproduce briefly (Start bridge, launch the game, hit a wall, etc.). Prefer a short run over a long session with Debug left on.
-3. Click **Stop debug**, then **Export log…**, save the zip, and attach it to a [GitHub issue](https://github.com/camborambo/SteeringWheelEmulator/issues) with a short description (wheel, game, what failed). Export before starting Debug again, or those logs are wiped.
+3. Open **Debug Tools → Stop Debug**, then **Export log…**, save the zip, and attach it to a [GitHub issue](https://github.com/camborambo/SteeringWheelEmulator/issues) with a short description (wheel, game, what failed). Export before starting Debug again, or those logs are wiped.
+
+For **physical Fanatec OEM / Dial / joy.cpl faces** (no game session needed): plug the real base, prefer emulator Stopped, then **Debug Tools → Capture Fanatec OEM…** and attach that zip.
 
 The zip includes:
 

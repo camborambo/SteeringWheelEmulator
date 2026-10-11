@@ -1933,6 +1933,17 @@ public partial class MainWindow : Window
         window.ShowDialog();
     }
 
+    private void DebugToolsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (DebugToolsMenu is null || DebugToolsButton is null) return;
+        DebugToolsMenu.PlacementTarget = DebugToolsButton;
+        DebugToolsMenu.Placement = PlacementMode.Bottom;
+        DebugToolsMenu.IsOpen = true;
+    }
+
+    private void DebugToolsMenu_Opened(object sender, RoutedEventArgs e) =>
+        RefreshDebugSessionUi();
+
     private void DebugSessionButton_Click(object sender, RoutedEventArgs e)
     {
         if (_debugSession.IsActive)
@@ -2026,12 +2037,74 @@ public partial class MainWindow : Window
         }
     }
 
+    private void CaptureFanatecOemButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Title = "Capture physical Fanatec OEM",
+            FileName = $"SteeringWheelEmulator-fanatec-oem-{DateTime.Now:yyyyMMdd-HHmmss}.zip",
+            Filter = "Zip archive (*.zip)|*.zip",
+            DefaultExt = ".zip",
+            AddExtension = true,
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+        };
+
+        if (dialog.ShowDialog(this) != true)
+            return;
+
+        try
+        {
+            if (_bridge.IsRunning)
+            {
+                var proceed = MessageBox.Show(
+                    this,
+                    "Bridge is Running — the zip may include virtual Fanatec OEM keys mixed with physical.\n\n" +
+                    "Prefer Stop, then capture again for a clean physical dump.\n\nContinue anyway?",
+                    "Capture Fanatec OEM",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (proceed != MessageBoxResult.Yes)
+                    return;
+            }
+
+            var path = FanatecOemCapture.ExportToZip(dialog.FileName, AppVersion.Display);
+            var open = MessageBox.Show(
+                this,
+                "Fanatec OEM capture saved:\n\n" + path +
+                "\n\nIncludes OEM registry (VID_0EB7&PID_*) and DirectInput axis/object names.\n" +
+                "Attach the zip to a GitHub issue (note base model + PC / PC Comp / Xbox mode).\n\n" +
+                "Open the Issues page now?",
+                "Capture Fanatec OEM",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+            if (open == MessageBoxResult.Yes)
+            {
+                Process.Start(new ProcessStartInfo(DiagnosticsExporter.GitHubIssuesUrl) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"/select,\"{path}\"",
+                    UseShellExecute = true,
+                });
+            }
+
+            StatusText.Text = "Fanatec OEM capture exported: " + Path.GetFileName(path);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Capture Fanatec OEM", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
     private void RefreshDebugSessionUi()
     {
-        if (DebugSessionButton is not null)
-            DebugSessionButton.Content = _debugSession.IsActive ? "Stop debug" : "Debug";
-        if (ExportDebugLogButton is not null)
-            ExportDebugLogButton.IsEnabled = _debugSession.ExportReady && !_debugSession.IsActive;
+        if (DebugSessionMenuItem is not null)
+            DebugSessionMenuItem.Header = _debugSession.IsActive ? "Stop Debug" : "Start Debug";
+        if (ExportDebugLogMenuItem is not null)
+            ExportDebugLogMenuItem.IsEnabled = _debugSession.ExportReady && !_debugSession.IsActive;
+        if (DebugToolsButton is not null)
+            DebugToolsButton.Content = _debugSession.IsActive ? "Debug Tools ●" : "Debug Tools";
     }
 
     private DiagnosticsLiveSnapshot CaptureDiagnosticsLiveSnapshot()

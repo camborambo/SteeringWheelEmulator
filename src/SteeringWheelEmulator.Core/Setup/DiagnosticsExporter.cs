@@ -55,6 +55,7 @@ public static class DiagnosticsExporter
             WriteFfbSnapshot(staging, live);
             WriteHidHide(staging);
             WriteOemRegistry(staging, live);
+            try { FanatecOemCapture.WriteIntoStaging(staging); } catch { /* best-effort */ }
             CopyTempLogs(staging);
             WriteGameFfbAnalysis(staging);
             CopyProfilesAndSettings(staging);
@@ -82,9 +83,10 @@ public static class DiagnosticsExporter
         "Attach this zip to a GitHub issue:\r\n" +
         "  " + GitHubIssuesUrl + "\r\n\r\n" +
         "How this zip was captured:\r\n" +
-        "  1. Click Debug on the main window (starts OEM / HID++ file logging).\r\n" +
+        "  1. Status bar → Debug Tools → Start Debug (OEM / HID++ file logging).\r\n" +
         "  2. Start bridge, launch the game, reproduce briefly (do not leave Debug on for a full race).\r\n" +
-        "  3. Stop debug, then Export log…\r\n\r\n" +
+        "  3. Debug Tools → Stop Debug, then Export log…\r\n" +
+        "  (Physical Fanatec OEM only: Debug Tools → Capture Fanatec OEM… — no Debug session needed.)\r\n\r\n" +
         "Leave Debug off during normal play - Forza-class titles stream OEM updates every frame;\r\n" +
         "older builds could stall the game on log I/O while the emulator UI stayed live.\r\n\r\n" +
         "For Fanatec vs Simucube FFB comparison, do the same on both PCs with the same build.\r\n\r\n" +
@@ -95,6 +97,7 @@ public static class DiagnosticsExporter
         "  ffb-snapshot.txt  - live OEM mix / bridge attach / gains at export time\r\n" +
         "  hidhide.txt       - cloak, apps whitelist, hidden devices (via HidHideCLI)\r\n" +
         "  oem-registry.txt  - OEMForceFeedback CLSID / Effects / DLL path for VID_046D&PID_C262\r\n" +
+        "  fanatec-oem-capture\\ - physical Fanatec OEM registry + DI axes (also Capture Fanatec OEM…)\r\n" +
         "  game-ffb-analysis.txt - OEM race signature (Triangle/CF vs spring-only / Vibration)\r\n" +
         "  logs\\emuffb-effects.log - game OEM calls (SESSION / CALL / EFFECT / MIX)\r\n" +
         "  logs\\steeringwheel-emulator-perf.log - emulator vs game CPU/RAM every 10s (hint= is our load, not the game GPU)\r\n" +

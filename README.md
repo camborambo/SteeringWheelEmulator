@@ -34,7 +34,7 @@ Game FFB effects  →  emuffb.dll    →  Physical base
 
 **Unbound tip:** Accessibility → Controls → **Controller Vibration** must be **On**, or the game streams spring-only (walls/rumble stay at magnitude 0).
 
-**Forza tip:** Set toolbar **Emulated device** to **Fanatec DD1** (while Stopped) so Forza detects a Fanatec PC Comp wheel. In Forza, pick **any Fanatec wheel profile**, then **custom bind** axes/buttons to build your layout. The virtual G920 identity is a worse fit for Forza (sparse G920-class FFB). Details: [user guide](docs/user-guide.md#forza-horizon--use-fanatec-dd1) · [force-feedback.md](docs/force-feedback.md#how-games-author-ffb-forza-vs-nfs-g920-vs-dd).
+**Forza tip:** Set toolbar **Emulated device** to **Fanatec DD1** (while Stopped) so Forza detects a Fanatec PC Comp wheel for steering + FFB. In Forza, pick **any Fanatec wheel profile**, then **custom bind** axes/buttons — physical buttons/handbrake usually bind fine; the emulator Fanatec list omits a virtual Handbrake Dial until we have an OEM hardware capture. The virtual G920 identity is a worse fit for Forza (sparse G920-class FFB). Details: [user guide](docs/user-guide.md#forza-horizon--use-fanatec-dd1) · [force-feedback.md](docs/force-feedback.md#how-games-author-ffb-forza-vs-nfs-g920-vs-dd).
 
 ### After WinUHid is installed (important)
 

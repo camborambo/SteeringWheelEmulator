@@ -7,7 +7,10 @@ public enum G920Control
     Throttle,
     Brake,
     Clutch,
-    /// <summary>Analog handbrake (Fanatec / mixed-brand; not on G920 virtual report).</summary>
+    /// <summary>
+    /// Legacy analog handbrake target (not on current Fanatec PC Comp HID/OEM — no Dial face).
+    /// Kept for profile deserialize; not offered in Fanatec bind UI. Use <see cref="TelemetryHandbrake"/> for arcade dump.
+    /// </summary>
     Handbrake,
     Hat,
     /// <summary>Button-sourced D-pad up (synthesized into virtual hat when no POV is bound/active).</summary>
@@ -151,14 +154,13 @@ public static class G920ControlInfo
         G920Control.Clutch,
     ];
 
-    /// <summary>Fanatec axes including handbrake (Dial / DI Slider1 in the virtual report).</summary>
+    /// <summary>Fanatec PC Comp axes matching joy.cpl / OEM (no Dial handbrake until captured).</summary>
     public static readonly G920Control[] FanatecAxisControls =
     [
         G920Control.Steering,
         G920Control.Throttle,
         G920Control.Brake,
         G920Control.Clutch,
-        G920Control.Handbrake,
     ];
 
     /// <summary>H-pattern order shown in the UI: Reverse first, then 1-6.</summary>
@@ -366,7 +368,6 @@ public static class G920ControlInfo
         G920Control.Throttle,
         G920Control.Brake,
         G920Control.Clutch,
-        G920Control.Handbrake,
         G920Control.Hat,
         ..HatDirectionControls,
         G920Control.ButtonX,

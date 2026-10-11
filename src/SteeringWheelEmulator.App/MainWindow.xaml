@@ -126,14 +126,26 @@
             <Hyperlink NavigateUri="https://stachenscale.com/" RequestNavigate="AuthorLink_RequestNavigate"
                        Foreground="#8AB4F8" TextDecorations="None">CamboRambo</Hyperlink>
           </TextBlock>
-          <Button x:Name="DebugSessionButton" Style="{StaticResource AppButton}" Content="Debug"
+          <Button x:Name="DebugToolsButton" Style="{StaticResource AppButton}" Content="Debug Tools"
                   Padding="10,4" Margin="0,0,6,0" FontSize="12"
-                  Click="DebugSessionButton_Click"
-                  ToolTip="Start a debug session to capture OEM / HID++ logs. Stop when done, then Export log."/>
-          <Button x:Name="ExportDebugLogButton" Style="{StaticResource AppButton}" Content="Export log…"
-                  Padding="10,4" Margin="0,0,6,0" FontSize="12" IsEnabled="False"
-                  Click="ExportDebugLogButton_Click"
-                  ToolTip="Export diagnostics after you stop a Debug session"/>
+                  Click="DebugToolsButton_Click"
+                  ToolTip="Debug session, export log, and Fanatec OEM capture">
+            <Button.ContextMenu>
+              <ContextMenu x:Name="DebugToolsMenu" Opened="DebugToolsMenu_Opened">
+                <MenuItem x:Name="DebugSessionMenuItem" Header="Start Debug"
+                          Click="DebugSessionButton_Click"
+                          ToolTip="Start OEM / HID++ file logging. Stop when done, then Export log."/>
+                <MenuItem x:Name="ExportDebugLogMenuItem" Header="Export log…"
+                          IsEnabled="False"
+                          Click="ExportDebugLogButton_Click"
+                          ToolTip="Export diagnostics after you stop a Debug session"/>
+                <Separator/>
+                <MenuItem Header="Capture Fanatec OEM…"
+                          Click="CaptureFanatecOemButton_Click"
+                          ToolTip="Export physical Fanatec OEM registry + DirectInput axis names. Prefer Stopped; plug the real base. No Debug session required."/>
+              </ContextMenu>
+            </Button.ContextMenu>
+          </Button>
           <TextBlock x:Name="AppVersionText" VerticalAlignment="Center" Margin="0,0,12,0"
                      Opacity="0.55" FontSize="12" Cursor="Hand" Text="v0.2.7"
                      ToolTip="Application version - click for About"

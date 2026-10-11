@@ -7,15 +7,21 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-10-10
+
+### Fixed
+
+- **Fanatec DD1 OEM / HID FFB:** PC Comp path aligned with the working Desktop fork — DI default-value axis/effect names, five OEM axes (no orphan Handbrake), HID report descriptor 5×16-bit + reserved byte matching the 17-byte report (removed mismatched Dial that advertised 6 axes while reports stayed 5). Physical `VID_0EB7&PID_0006` FAW OEM restored on Start/Stop. Fanatec bind UI no longer offers the virtual Handbrake axis (unknown Dial OEM/joy.cpl); Telemetry arcade Handbrake bind unchanged.
+
+### Added
+
+- Status bar **Debug Tools** menu: Start/Stop Debug, Export log…, and **Capture Fanatec OEM…** (physical Fanatec Joystick OEM registry + DI axis names for Dial/handbrake research). Capture needs no Debug session; also embedded under `fanatec-oem-capture\` in full Export log zips.
+- Docs: Fanatec bind list has no Handbrake Dial (no OEM hardware capture yet); Forza mainly needs virtual Fanatec identity for steering + FFB — buttons/handbrake bind from physical devices.
+
 ### Changed
 
 - Main window UI capped at **60 Hz** (`Timeline.DesiredFrameRate`) so high-refresh monitors do not multiply WPF paint cost on weaker PCs. Live meters slow to ~10 Hz when the window is inactive/minimized, with a light adaptive backoff under load; unchanged Text/ProgressBar values are skipped.
 - Removed Settings → **Debug Test** (and all sub-options). Runtime always uses the known-good release FFB/input path. Fanatec PC Comp + Fanatec physical dual-handle stays in the core path. Soft steering catch-up / Invert FFB remain on Force Feedback → Advanced Settings. Legacy `settings.json` keys still load but are forced off.
-
-## [0.2.8] - 2026-10-10
-
-### Changed
-
 - Docs / Emulated-device tooltip: **Forza Horizon → Fanatec DD1**, then in Forza pick any Fanatec profile and custom-bind; keep **Logitech G920** for Heat / Unbound.
 - **Product rename → Steering Wheel Emulator:** UI brand, `SteeringWheelEmulator.exe` / zip / install folder, `%AppData%` / `%ProgramData%` / LocalAppData under `SteeringWheelEmulator` (one-time migrate from `G920Emulator`, then remove old trees when safe). GitHub repo → `camborambo/SteeringWheelEmulator`. C# projects/namespaces → `SteeringWheelEmulator.*` (`SteeringWheelEmulator.sln`). `emuffb` COM CLSID, SHM `Local\G920Emulator.FfbTorque.v7`, and virtual G920/Fanatec HID InstanceIDs unchanged. SimHub External Sim → **Steering Wheel Emulator (simulated)**; plugin → `SteeringWheelEmulator.SimHubPlugin.dll` (Register removes legacy `G920Emulator.SimHubPlugin`).
 

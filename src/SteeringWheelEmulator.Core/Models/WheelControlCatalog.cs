@@ -73,7 +73,6 @@ public sealed class WheelControlCatalog : IControlCatalog
         G920Control.Throttle => "Accelerator",
         G920Control.Brake => "Brake",
         G920Control.Clutch => "Clutch",
-        G920Control.Handbrake => "Handbrake",
         G920Control.Hat => "Directional pad (hat)",
         G920Control.HatUp => "D-pad Up",
         G920Control.HatDown => "D-pad Down",

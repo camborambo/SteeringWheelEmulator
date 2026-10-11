@@ -42,12 +42,14 @@ Same DirectInput constant-force path for all of these:
 
 ### Forza Horizon — use Fanatec DD1
 
-Forza picks effects and control layouts from the **wheel type it detects**.
+Forza picks effects and control layouts from the **wheel type it detects**. Steering + OEM FFB on the virtual Fanatec identity are the important parts; Forza can usually bind buttons (and handbrake) from your physical devices once you custom-bind.
 
 1. In Steering Wheel Emulator (Stopped): **Emulated device → Fanatec DD1** → Start.
 2. In Forza: select **any Fanatec wheel profile**, then use **custom bind** to map steering / pedals / buttons into a custom wheel profile.
 
-If you leave the emulator on virtual **G920**, Forza authors its **G920 OEM stream** (often stepped / low-rate Constant Force) instead of a Fanatec-class mix — that can feel grainy on DD bases. Prefer Fanatec DD1 for Forza. Details: [user guide](user-guide.md#forza-horizon--use-fanatec-dd1) · [force-feedback.md](force-feedback.md#how-games-author-ffb-forza-vs-nfs-g920-vs-dd).
+The Fanatec bind list has **no virtual Handbrake / Dial axis** yet (no verified OEM face without DD1 hardware). That is not required for typical Forza setups. To contribute a physical OEM dump: **Debug Tools → Capture Fanatec OEM…**. Details: [user guide](user-guide.md#forza-horizon--use-fanatec-dd1) · [force-feedback.md](force-feedback.md#how-games-author-ffb-forza-vs-nfs-g920-vs-dd).
+
+If you leave the emulator on virtual **G920**, Forza authors its **G920 OEM stream** (often stepped / low-rate Constant Force) instead of a Fanatec-class mix — that can feel grainy on DD bases. Prefer Fanatec DD1 for Forza.
 
 ### Forza Horizon series (test signing)
 

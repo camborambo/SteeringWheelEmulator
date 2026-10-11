@@ -28,7 +28,8 @@ public static class FanatecSourceLabels
             "Y" => "Accelerator (Y)",
             "RZ" => "Brake (Rz)",
             "SLIDER0" => "Clutch (Slider0)",
-            "SLIDER1" => "Handbrake (Dial / Slider1)",
+            // Physical Fanatec often exposes Dial as Slider1; virtual PC Comp HID has no Dial yet.
+            "SLIDER1" => "Slider1 (Dial / handbrake on some bases)",
             "Z" => "Combined pedals (Z)",
             "RX" => "X Rotation (Rx)",
             "RY" => "Y Rotation (Ry)",

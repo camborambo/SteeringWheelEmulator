@@ -3,15 +3,15 @@ using SteeringWheelEmulator.Core.Models;
 namespace SteeringWheelEmulator.Core.Mapping;
 
 /// <summary>
-/// Fanatec DD1 HID input report matching live PC Comp DI faces:
+/// Fanatec DD1 HID input report matching live PC Comp DI faces (<c>0EB7:0004</c>):
 ///   X = Wheel, Y = Combined Pedals (center rest), Z = Accelerator,
-///   Rz = Brake, Slider = Clutch, Dial = Handbrake (DI Slider1).
-/// Buttons: 5 right paddle … 26 RB (see catalog). Report ID 1, 18 bytes incl. id.
+///   Rz = Brake, Slider = Clutch.
+/// Buttons: 5 right paddle … 26 RB (see catalog). Report ID 1, 17 bytes incl. id.
 /// </summary>
 public static class FanatecDd1ReportBuilder
 {
     public const byte ReportId = 0x01;
-    public const int ReportSize = 18;
+    public const int ReportSize = 17;
 
     public static byte[] Build(MappedG920State state)
     {
@@ -77,14 +77,13 @@ public static class FanatecDd1ReportBuilder
         var thr = Math.Clamp(state.Throttle, 0f, 1f);
         var brk = Math.Clamp(state.Brake, 0f, 1f);
         var clutch = Math.Clamp(state.Clutch, 0f, 1f);
-        var handbrake = Math.Clamp(state.Handbrake, 0f, 1f);
         var combined = Math.Clamp(0.5f + (thr - brk) * 0.5f, 0f, 1f);
         WriteAxis16(report, 8, combined);           // Y Combined Pedals (center rest)
         WriteAxis16(report, 10, 1f - thr);         // Z Accelerator (inverted)
         WriteAxis16(report, 12, 1f - brk);         // Rz Brake (inverted)
         WriteAxis16(report, 14, 1f - clutch);      // Slider Clutch (inverted)
-        // Dial / DI Slider1: 0 = released, 1 = pulled (same as ClubSport / HBP handbrake).
-        WriteAxis16(report, 16, handbrake);
+        // Reserved padding after Slider (matches working fork HID: 5×16-bit + 1 byte).
+        report[16] = 0xFF;
         return report;
     }
 
